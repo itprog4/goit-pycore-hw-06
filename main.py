@@ -16,7 +16,7 @@ class Name(Field):
 
 class Phone(Field):
     def __init__(self, value: str):
-        match = re.match(r'\d{10}', value)
+        match = re.match(r'^\d{10}$', value)
         if not match:
             raise ValueError("Invalid phone number format")
         super().__init__(value)
@@ -45,12 +45,21 @@ class Record:
             if self.phones[counter].value == old_phone:
                 self.phones[counter] = Phone(new_phone)
                 return
+            counter += 1
 
     def find_phone(self, phone: str) -> Phone | None:
         for p in self.phones:
             if p.value == phone:
                 return p
         return None
+
+    def remove_phone(self, phone: str) -> None:
+        counter: int = 0
+        while counter < len(self.phones):
+            if self.phones[counter].value == phone:
+                del self.phones[counter]
+                return
+            counter += 1
 
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
